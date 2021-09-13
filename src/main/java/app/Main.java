@@ -1,6 +1,7 @@
 package app;
 
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
@@ -18,7 +19,7 @@ public class Main {
 
         Javalin app = Javalin.create(config -> {
             config.server(Main::createHttp2Server);
-            config.addStaticFiles("/public");
+            config.addStaticFiles("/public", Location.CLASSPATH);
         }).start();
 
         app.get("/", ctx -> ctx.result("Hello World"));
