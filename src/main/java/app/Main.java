@@ -48,7 +48,9 @@ public class Main {
 
         // HTTPS Configuration
         HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+        SecureRequestCustomizer src = new SecureRequestCustomizer();
+        src.setSniHostCheck(false);
+        httpsConfig.addCustomizer(src);
 
         // HTTP/2 Connection Factory
         HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConfig);
