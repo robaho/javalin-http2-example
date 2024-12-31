@@ -18,8 +18,8 @@ public class Main {
     public static void main(String[] args) {
 
         Javalin app = Javalin.create(config -> {
-            config.server(Main::createHttp2Server);
-            config.addStaticFiles("/public", Location.CLASSPATH);
+            config.pvt.jetty.server = createHttp2Server();
+            config.staticFiles.add("/public", Location.CLASSPATH);
         }).start();
 
         app.get("/", ctx -> ctx.result("Hello World"));
@@ -40,7 +40,7 @@ public class Main {
         httpConfig.setSecurePort(8443);
 
         // SSL Context Factory for HTTPS and HTTP/2
-        SslContextFactory sslContextFactory = new SslContextFactory();
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(Main.class.getResource("/keystore.jks").toExternalForm()); // replace with your real keystore
         sslContextFactory.setKeyStorePassword("password"); // replace with your real password
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
@@ -62,6 +62,18 @@ public class Main {
         ServerConnector http2Connector = new ServerConnector(server, ssl, alpn, h2, new HttpConnectionFactory(httpsConfig));
         http2Connector.setPort(8443);
         server.addConnector(http2Connector);
+
+        HttpConfiguration httpConfig2 = new HttpConfiguration();
+        httpConfig2.setSendServerVersion(false);
+
+        // HTTP/2 Cleartext Connection Factory
+        HTTP2ServerConnectionFactory h2c = new HTTP2ServerConnectionFactory(httpConfig2);
+
+        // HTTP/2 Cleartext Connector
+        ServerConnector h2cConnector = new ServerConnector(server,h2c);
+        //  new HttpConnectionFactory(httpConfig2), h2c);
+        h2cConnector.setPort(8081);
+        server.addConnector(h2cConnector);
 
         return server;
     }
