@@ -23,7 +23,7 @@ public class Main {
         }).start();
 
         app.get("/", ctx -> ctx.result("Hello World"));
-
+        app.post("/echo", ctx -> ctx.result(ctx.bodyInputStream()));
     }
 
     private static Server createHttp2Server() {
