@@ -11,6 +11,18 @@ java {
     }
 }
 
+tasks.withType(JavaExec) {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    })
+}
+
+apply plugin: 'application'
+
+application {
+    mainClass = 'app.Main'
+}
+
 repositories {
     mavenCentral()
 }
